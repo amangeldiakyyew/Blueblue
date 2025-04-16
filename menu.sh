@@ -1,23 +1,25 @@
-BIBlack='\033[1;90m'      # Black
-BIRed='\033[1;91m'        # Red
-BIGreen='\033[1;92m'      # Green
-BIYellow='\033[1;93m'     # Yellow
-BIBlue='\033[1;94m'       # Blue
-BIPurple='\033[1;95m'     # Purple
-BICyan='\033[1;96m'       # Cyan
-BIWhite='\033[1;97m'      # White
-UWhite='\033[4;37m'       # White
-On_IPurple='\033[0;105m'  #
+BIBlack='\033[1;90m'     # Black
+BIRed='\033[1;91m'       # Red
+BIGreen='\033[1;92m'     # Green
+BIYellow='\033[1;93m'    # Yellow
+BIBlue='\033[1;94m'      # Blue
+BIPurple='\033[1;95m'    # Purple
+BICyan='\033[1;96m'      # Cyan
+BIWhite='\033[1;97m'     # White
+UWhite='\033[4;37m'      # White
+On_IPurple='\033[0;105m' #
 On_IRed='\033[0;101m'
-IBlack='\033[0;90m'       # Black
-IRed='\033[0;91m'         # Red
-IGreen='\033[0;92m'       # Green
-IYellow='\033[0;93m'      # Yellow
-IBlue='\033[0;94m'        # Blue
-IPurple='\033[0;95m'      # Purple
-ICyan='\033[0;96m'        # Cyan
-IWhite='\033[0;97m'       # White
+IBlack='\033[0;90m'  # Black
+IRed='\033[0;91m'    # Red
+IGreen='\033[0;92m'  # Green
+IYellow='\033[0;93m' # Yellow
+IBlue='\033[0;94m'   # Blue
+IPurple='\033[0;95m' # Purple
+ICyan='\033[0;96m'   # Cyan
+IWhite='\033[0;97m'  # White
 NC='\e[0m'
+green() { echo -e "\\033[32;1m${*}\\033[0m"; }
+red() { echo -e "\\033[31;1m${*}\\033[0m"; }
 
 # // Export Color & Information
 export RED='\033[0;31m'
@@ -52,189 +54,860 @@ export Auther=".geovpn"
 
 # // Root Checking
 if [ "${EUID}" -ne 0 ]; then
-		echo -e "${EROR} Please Run This Script As Root User !"
-		exit 1
+	echo -e "${EROR} Please Run This Script As Root User !"
+	exit 1
 fi
 
 # // Exporting IP Address
-export IP=$( curl -s https://ipinfo.io/ip/ )
+export IP=$(curl -s https://ipinfo.io/ip/)
 
 # // Exporting Network Interface
 export NETWORK_IFACE="$(ip route show to default | awk '{print $5}')"
 
-# // Clear
 clear
-clear && clear && clear
-clear;clear;clear
-cek=$(service ssh status | grep active | cut -d ' ' -f5)
-if [ "$cek" = "active" ]; then
-stat=-f5
-else
-stat=-f7
-fi
-ssh=$(service ssh status | grep active | cut -d ' ' $stat)
-if [ "$ssh" = "active" ]; then
-ressh="${green}ON${NC}"
-else
-ressh="${red}OFF${NC}"
-fi
-sshstunel=$(service stunnel5 status | grep active | cut -d ' ' $stat)
-if [ "$sshstunel" = "active" ]; then
-resst="${green}ON${NC}"
-else
-resst="${red}OFF${NC}"
-fi
-sshws=$(service ws-stunnel status | grep active | cut -d ' ' $stat)
-if [ "$sshws" = "active" ]; then
-ressshws="${green}ON${NC}"
-else
-ressshws="${red}OFF${NC}"
-fi
-ngx=$(service nginx status | grep active | cut -d ' ' $stat)
-if [ "$ngx" = "active" ]; then
-resngx="${green}ON${NC}"
-else
-resngx="${red}OFF${NC}"
-fi
-dbr=$(service dropbear status | grep active | cut -d ' ' $stat)
-if [ "$dbr" = "active" ]; then
-resdbr="${green}ON${NC}"
-else
-resdbr="${red}OFF${NC}"
-fi
-v2r=$(service xray status | grep active | cut -d ' ' $stat)
-if [ "$v2r" = "active" ]; then
-resv2r="${green}ON${NC}"
-else
-resv2r="${red}OFF${NC}"
-fi
-function addhost(){
-clear
-echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo ""
-read -rp "Domain/Host: " -e host
-echo ""
-if [ -z $host ]; then
-echo "????"
-echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-read -n 1 -s -r -p "Press any key to back on menu"
-setting-menu
-else
-rm -fr /etc/xray/domain
-echo "IP=$host" > /var/lib/scrz-prem/ipvps.conf
-echo $host > /etc/xray/domain
-echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo "Dont forget to renew gen-ssl"
-echo ""
-read -n 1 -s -r -p "Press any key to back on menu"
-menu
-fi
+function del() {
+	clear
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e "\E[0;41;36m               DELETE USER                \E[0m"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo ""
+	read -p "Username SSH to Delete : " Pengguna
+
+	if getent passwd $Pengguna >/dev/null 2>&1; then
+		userdel $Pengguna >/dev/null 2>&1
+		echo -e "User $Pengguna was removed."
+	else
+		echo -e "Failure: User $Pengguna Not Exist."
+	fi
+
+	read -n 1 -s -r -p "Press any key to back on menu"
+
+	menu
 }
-function genssl(){
-clear
-systemctl stop nginx
-systemctl stop xray
-domain=$(cat /var/lib/scrz-prem/ipvps.conf | cut -d'=' -f2)
-Cek=$(lsof -i:80 | cut -d' ' -f1 | awk 'NR==2 {print $1}')
-if [[ ! -z "$Cek" ]]; then
-sleep 1
-echo -e "[ ${red}WARNING${NC} ] Detected port 80 used by $Cek " 
-systemctl stop $Cek
-sleep 2
-echo -e "[ ${green}INFO${NC} ] Processing to stop $Cek " 
-sleep 1
-fi
-echo -e "[ ${green}INFO${NC} ] Starting renew gen-ssl... " 
-sleep 2
-/root/.acme.sh/acme.sh --upgrade
-/root/.acme.sh/acme.sh --upgrade --auto-upgrade
-/root/.acme.sh/acme.sh --set-default-ca --server letsencrypt
-/root/.acme.sh/acme.sh --issue -d $domain --standalone -k ec-256
-~/.acme.sh/acme.sh --installcert -d $domain --fullchainpath /etc/xray/xray.crt --keypath /etc/xray/xray.key --ecc
-echo -e "[ ${green}INFO${NC} ] Renew gen-ssl done... " 
-sleep 2
-echo -e "[ ${green}INFO${NC} ] Starting service $Cek " 
-sleep 2
-echo $domain > /etc/xray/domain
-systemctl start nginx
-systemctl start xray
-echo -e "[ ${green}INFO${NC} ] All finished... " 
-sleep 0.5
-echo ""
-read -n 1 -s -r -p "Press any key to back on menu"
-menu
+function autodel() {
+	clear
+	hariini=$(date +%d-%m-%Y)
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e "\E[0;41;36m               AUTO DELETE                \E[0m"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo "Thank you for removing the EXPIRED USERS"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	cat /etc/shadow | cut -d: -f1,8 | sed /:$/d >/tmp/expirelist.txt
+	totalaccounts=$(cat /tmp/expirelist.txt | wc -l)
+	for ((i = 1; i <= $totalaccounts; i++)); do
+		tuserval=$(head -n $i /tmp/expirelist.txt | tail -n 1)
+		username=$(echo $tuserval | cut -f1 -d:)
+		userexp=$(echo $tuserval | cut -f2 -d:)
+		userexpireinseconds=$(($userexp * 86400))
+		tglexp=$(date -d @$userexpireinseconds)
+		tgl=$(echo $tglexp | awk -F" " '{print $3}')
+		while [ ${#tgl} -lt 2 ]; do
+			tgl="0"$tgl
+		done
+		while [ ${#username} -lt 15 ]; do
+			username=$username" "
+		done
+		bulantahun=$(echo $tglexp | awk -F" " '{print $2,$6}')
+		echo "echo "Expired- User : $username Expire at : $tgl $bulantahun"" >>/usr/local/bin/alluser
+		todaystime=$(date +%s)
+		if [ $userexpireinseconds -ge $todaystime ]; then
+			:
+		else
+			echo "echo "Expired- Username : $username are expired at: $tgl $bulantahun and removed : $hariini "" >>/usr/local/bin/deleteduser
+			echo "Username $username that are expired at $tgl $bulantahun removed from the VPS $hariini"
+			userdel $username
+		fi
+	done
+	echo " "
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+
+	read -n 1 -s -r -p "Press any key to back on menu"
+	menu
+
 }
-export sem=$( curl -s https://raw.githubusercontent.com/NevermoreSSH/Blueblue/main/test/versions)
-export pak=$( cat /home/.ver)
-IPVPS=$(curl -s ipinfo.io/ip )
-ISPVPS=$( curl -s ipinfo.io/org )
+function ceklim() {
+	clear
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e "\E[0;41;36m         CHECK USER MULTI SSH        \E[0m"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	if [ -e "/root/log-limit.txt" ]; then
+		echo "User Who Violate The Maximum Limit"
+		echo "Time - Username - Number of Multilogin"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		cat /root/log-limit.txt
+	else
+		echo " No user has committed a violation"
+		echo " "
+		echo " or"
+		echo " "
+		echo " The user-limit script not been executed."
+	fi
+	echo " "
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo " "
+	read -n 1 -s -r -p "Press any key to back on menu"
+	menu
+}
+function cek() {
+	if [ -e "/var/log/auth.log" ]; then
+		LOG="/var/log/auth.log"
+	fi
+	if [ -e "/var/log/secure" ]; then
+		LOG="/var/log/secure"
+	fi
+
+	data=($(ps aux | grep -i dropbear | awk '{print $2}'))
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e "\E[0;41;36m         Dropbear User Login       \E[0m"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo "ID  |  Username  |  IP Address"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	cat $LOG | grep -i dropbear | grep -i "Password auth succeeded" >/tmp/login-db.txt
+	for PID in "${data[@]}"; do
+		cat /tmp/login-db.txt | grep "dropbear\[$PID\]" >/tmp/login-db-pid.txt
+		NUM=$(cat /tmp/login-db-pid.txt | wc -l)
+		USER=$(cat /tmp/login-db-pid.txt | awk '{print $10}')
+		IP=$(cat /tmp/login-db-pid.txt | awk '{print $12}')
+		if [ $NUM -eq 1 ]; then
+			echo "$PID - $USER - $IP"
+		fi
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+
+	done
+	echo " "
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e "\E[0;41;36m          OpenSSH User Login       \E[0m"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo "ID  |  Username  |  IP Address"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	cat $LOG | grep -i sshd | grep -i "Accepted password for" >/tmp/login-db.txt
+	data=($(ps aux | grep "\[priv\]" | sort -k 72 | awk '{print $2}'))
+
+	for PID in "${data[@]}"; do
+		cat /tmp/login-db.txt | grep "sshd\[$PID\]" >/tmp/login-db-pid.txt
+		NUM=$(cat /tmp/login-db-pid.txt | wc -l)
+		USER=$(cat /tmp/login-db-pid.txt | awk '{print $9}')
+		IP=$(cat /tmp/login-db-pid.txt | awk '{print $11}')
+		if [ $NUM -eq 1 ]; then
+			echo "$PID - $USER - $IP"
+		fi
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+
+	done
+	if [ -f "/etc/openvpn/server/openvpn-tcp.log" ]; then
+		echo " "
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e "\E[0;41;36m          OpenVPN TCP User Login         \E[0m"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo "Username  |  IP Address  |  Connected Since"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		cat /etc/openvpn/server/openvpn-tcp.log | grep -w "^CLIENT_LIST" | cut -d ',' -f 2,3,8 | sed -e 's/,/      /g' >/tmp/vpn-login-tcp.txt
+		cat /tmp/vpn-login-tcp.txt
+	fi
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+
+	if [ -f "/etc/openvpn/server/openvpn-udp.log" ]; then
+		echo " "
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e "\E[0;41;36m          OpenVPN UDP User Login         \E[0m"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo "Username  |  IP Address  |  Connected Since"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		cat /etc/openvpn/server/openvpn-udp.log | grep -w "^CLIENT_LIST" | cut -d ',' -f 2,3,8 | sed -e 's/,/      /g' >/tmp/vpn-login-udp.txt
+		cat /tmp/vpn-login-udp.txt
+	fi
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo ""
+
+	rm -f /tmp/login-db-pid.txt
+	rm -f /tmp/login-db.txt
+	rm -f /tmp/vpn-login-tcp.txt
+	rm -f /tmp/vpn-login-udp.txt
+	read -n 1 -s -r -p "Press any key to back on menu"
+
+	menu
+}
+function member() {
+	clear
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e "\E[0;41;36m                 MEMBER SSH               \E[0m"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo "USERNAME          EXP DATE          STATUS"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	while read expired; do
+		AKUN="$(echo $expired | cut -d: -f1)"
+		ID="$(echo $expired | grep -v nobody | cut -d: -f3)"
+		exp="$(chage -l $AKUN | grep "Account expires" | awk -F": " '{print $2}')"
+		status="$(passwd -S $AKUN | awk '{print $2}')"
+		if [[ $ID -ge 1000 ]]; then
+			if [[ "$status" = "L" ]]; then
+				printf "%-17s %2s %-17s %2s \n" "$AKUN" "$exp     " "LOCKED${NORMAL}"
+			else
+				printf "%-17s %2s %-17s %2s \n" "$AKUN" "$exp     " "UNLOCKED${NORMAL}"
+			fi
+		fi
+	done </etc/passwd
+	JUMLAH="$(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd | wc -l)"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo "Account number: $JUMLAH user"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	read -n 1 -s -r -p "Press any key to back on menu"
+	menu
+}
+function renew() {
+	clear
+	clear
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e "\E[0;41;36m               RENEW  USER                \E[0m"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo
+	read -p "Username : " User
+	egrep "^$User" /etc/passwd >/dev/null
+	if [ $? -eq 0 ]; then
+		read -p "Day Extend : " Days
+		Today=$(date +%s)
+		Days_Detailed=$(($Days * 86400))
+		Expire_On=$(($Today + $Days_Detailed))
+		Expiration=$(date -u --date="1970-01-01 $Expire_On sec GMT" +%Y/%m/%d)
+		Expiration_Display=$(date -u --date="1970-01-01 $Expire_On sec GMT" '+%d %b %Y')
+		passwd -u $User
+		usermod -e $Expiration $User
+		egrep "^$User" /etc/passwd >/dev/null
+		echo -e "$Pass\n$Pass\n" | passwd $User &>/dev/null
+		clear
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e "\E[0;41;36m               RENEW  USER                \E[0m"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e ""
+		echo -e " Username : $User"
+		echo -e " Days Added : $Days Days"
+		echo -e " Expires on :  $Expiration_Display"
+		echo -e ""
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	else
+		clear
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e "\E[0;41;36m               RENEW  USER                \E[0m"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e ""
+		echo -e "   Username Doesnt Exist      "
+		echo -e ""
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	fi
+	read -n 1 -s -r -p "Press any key to back on menu"
+	menu
+}
+function autokill() {
+	clear
+	Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
+	Info="${Green_font_prefix}[ON]${Font_color_suffix}"
+	Error="${Red_font_prefix}[OFF]${Font_color_suffix}"
+	cek=$(grep -c -E "^# Autokill" /etc/cron.d/tendang)
+	if [[ "$cek" = "1" ]]; then
+		sts="${Info}"
+	else
+		sts="${Error}"
+	fi
+
+	# Check if tendang script exists
+	if [ ! -f "/usr/bin/tendang" ]; then
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e "\E[44;1;39m             AUTOKILL SSH          \E[0m"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e "${Red_font_prefix}Error: tendang script not found in /usr/bin/${Font_color_suffix}"
+		echo -e "Please make sure tendang.sh is properly installed as /usr/bin/tendang"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		read -n 1 -s -r -p "Press any key to back on menu"
+		menu
+		return
+	fi
+
+	clear
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e "\E[44;1;39m             AUTOKILL SSH          \E[0m"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e "Status Autokill : $sts        "
+	echo -e ""
+	echo -e "[1]  Configure AutoKill Settings"
+	echo -e "[2]  Turn Off AutoKill/MultiLogin"
+	echo -e "[3]  View Current Settings"
+	echo -e "[x]  Menu"
+	echo ""
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e ""
+	read -p "Select option [1-3 or x]: " option
+	echo -e ""
+
+	case $option in
+	1)
+		clear
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e "\E[44;1;39m      CONFIGURE AUTOKILL SETTINGS    \E[0m"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e ""
+
+		# Ask for check frequency
+		echo -e "How often should the system check for violations (in minutes)?"
+		echo -e "Options: Any value between 1-30 minutes"
+		echo -e "Recommended values:"
+		echo -e "- 1-2 minutes: For very strict monitoring (higher server load)"
+		echo -e "- 5 minutes: Standard monitoring (recommended)"
+		echo -e "- 10-15 minutes: Less frequent checks (lower server load)"
+		echo -e ""
+		read -p "Enter check frequency in minutes [1-30]: " check_freq_min
+
+		# Validate input and set default if needed
+		if [[ -z "$check_freq_min" || ! "$check_freq_min" =~ ^[0-9]+$ || "$check_freq_min" -lt 1 || "$check_freq_min" -gt 30 ]]; then
+			check_freq_min=5
+			echo -e "Using default value: 5 minutes"
+			cron_freq="*/5"
+			check_display="5 minutes"
+		else
+			cron_freq="*/$check_freq_min"
+			check_display="$check_freq_min minutes"
+		fi
+		echo -e ""
+
+		# Ask for max connections
+		echo -e "What is the maximum number of simultaneous connections allowed per user?"
+		echo -e "This is the limit before counting a violation. For example:"
+		echo -e "- If set to 1: A user connecting from 2+ devices gets 1 violation"
+		echo -e "- If set to 2: A user can use 2 devices, but a 3rd device counts as a violation"
+		echo -e "Recommended: 1-2 connections"
+		echo -e ""
+		read -p "Enter maximum allowed connections [1-10]: " max
+		# Set default if empty or invalid
+		if [[ -z "$max" || ! "$max" =~ ^[0-9]+$ || "$max" -lt 1 ]]; then
+			max=1
+			echo -e "Using default value: 1 connection"
+		fi
+		echo -e ""
+
+		# Ask for violation threshold
+		echo -e "How many violations are needed before a user gets banned?"
+		echo -e "This counts how many times a user exceeds their connection limit."
+		echo -e "Examples:"
+		echo -e "- If set to 1: User is banned on first violation (strict)"
+		echo -e "- If set to 2: User gets one warning, banned on 2nd violation"
+		echo -e "- If set to 3: User gets two warnings, banned on 3rd violation"
+		echo -e "Recommended: 2-3 violations"
+		echo -e ""
+		read -p "Enter violation threshold [1-10]: " violation_threshold
+		# Set default if empty or invalid
+		if [[ -z "$violation_threshold" || ! "$violation_threshold" =~ ^[0-9]+$ || "$violation_threshold" -lt 1 ]]; then
+			violation_threshold=2
+			echo -e "Using default value: 2 violations"
+		fi
+		echo -e ""
+
+		# Ask for repeat violation period
+		echo -e "Set the time window to check for repeat violations (in minutes)"
+		echo -e "If a user exceeds the connection limit multiple times within"
+		echo -e "this period, they will be temporarily banned."
+		echo -e "Recommended: 5-15 minutes"
+		echo -e ""
+		read -p "Enter repeat violation check period [1-60 minutes]: " repeat_period
+		# Set default if empty or invalid
+		if [[ -z "$repeat_period" || ! "$repeat_period" =~ ^[0-9]+$ || "$repeat_period" -lt 1 ]]; then
+			repeat_period=5
+			echo -e "Using default value: 5 minutes"
+		fi
+		echo -e ""
+
+		# Ask for ban duration
+		echo -e "How long should users be banned for violations? (in minutes)"
+		echo -e "Recommended: 5-30 minutes"
+		echo -e ""
+		read -p "Enter ban duration [1-1440 minutes]: " ban_minutes
+		# Set default if empty or invalid
+		if [[ -z "$ban_minutes" || ! "$ban_minutes" =~ ^[0-9]+$ || "$ban_minutes" -lt 1 ]]; then
+			ban_minutes=5
+			echo -e "Using default value: 5 minutes"
+		fi
+		# Convert minutes to seconds for the script
+		ban_duration=$((ban_minutes * 60))
+		echo -e ""
+
+		# Show summary and confirm
+		clear
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e "\E[44;1;39m         CONFIRM SETTINGS          \E[0m"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e "Check frequency    : Every $check_display"
+		echo -e "Max connections    : $max"
+		echo -e "Violation threshold: $violation_threshold violations"
+		echo -e "Violation period   : $repeat_period minutes"
+		echo -e "Ban duration       : $ban_minutes minutes"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e ""
+		read -p "Apply these settings? (y/n): " confirm
+
+		if [[ "$confirm" =~ [Yy] ]]; then
+			# Make sure tendang has execute permissions
+			chmod +x /usr/bin/tendang
+
+			# Create a temporary file for the cron job to avoid issues with truncation
+			TEMP_CRON=$(mktemp)
+
+			# Debug: echo settings before writing to cron
+			echo "Writing to cron: MAX=$max, PERIOD=$repeat_period, DURATION=$ban_duration, THRESHOLD=$violation_threshold" >>/root/autokill-settings.log
+
+			# Write cron configuration to the temporary file
+			echo "# Autokill" >$TEMP_CRON
+			echo "$cron_freq * * * *  root /usr/bin/tendang $max $repeat_period $ban_duration $violation_threshold" >>$TEMP_CRON
+
+			# Verify cron content
+			echo "Cron content: $(cat $TEMP_CRON)" >>/root/autokill-settings.log
+
+			# Move the temporary file to the final location
+			mv $TEMP_CRON /etc/cron.d/tendang
+
+			# Set correct permissions on cron file
+			chmod 644 /etc/cron.d/tendang
+
+			# Verify final cron content
+			echo "Final cron content: $(cat /etc/cron.d/tendang)" >>/root/autokill-settings.log
+
+			# Log settings for debugging
+			echo "$(date): AutoKill settings updated: max=$max, period=$repeat_period, duration=$ban_duration, threshold=$violation_threshold" >>/root/autokill-settings.log
+
+			# Reset logs
+			echo "" >/root/log-limit.txt
+			echo "" >/root/violations.log
+
+			# Create empty banned-users.txt if it doesn't exist
+			touch /root/banned-users.txt
+
+			echo -e ""
+			echo -e "======================================"
+			echo -e ""
+			echo -e "      AutoKill has been activated!"
+			echo -e "      System will check every $check_display"
+			echo -e "      Max connections allowed: $max"
+			echo -e "      Users will be banned after $violation_threshold violations"
+			echo -e "      within $repeat_period minutes for $ban_minutes minutes"
+			echo -e ""
+			echo -e "      Reloading cron service..."
+
+			# Reload and restart cron service with output
+			service cron reload
+			service cron restart
+
+			echo -e "      Cron service reloaded."
+			echo -e "      Installed cron job configuration:"
+			echo -e "      $(cat /etc/cron.d/tendang)"
+			echo -e "======================================"
+		else
+			echo -e ""
+			echo -e "Settings not applied. No changes made."
+		fi
+		;;
+	2)
+		# Backup existing cron file if it exists for reference
+		if [ -f "/etc/cron.d/tendang" ]; then
+			cp /etc/cron.d/tendang /root/tendang.cron.backup.$(date +%Y%m%d%H%M%S)
+		fi
+
+		# Remove cron file
+		rm -f /etc/cron.d/tendang
+
+		# Reset logs
+		echo "" >/root/log-limit.txt
+		echo "" >/root/violations.log
+
+		# Clear banned users
+		if [ -f "/root/banned-users.txt" ] && [ -s "/root/banned-users.txt" ]; then
+			echo -e "Do you want to unban all currently banned users? (y/n)"
+			read -p "" unban_choice
+
+			if [[ "$unban_choice" =~ [Yy] ]]; then
+				# Unban all users
+				while IFS= read -r line || [ -n "$line" ]; do
+					# Skip empty lines
+					if [ -z "$line" ]; then
+						continue
+					fi
+
+					user=$(echo $line | awk '{print $1}')
+					# Unlock the account
+					passwd -u $user >/dev/null 2>&1
+				done </root/banned-users.txt
+
+				# Clear the banned users file
+				>/root/banned-users.txt
+				echo -e "All users have been unbanned."
+			fi
+		fi
+
+		echo -e ""
+		echo -e "======================================"
+		echo -e ""
+		echo -e "      AutoKill MultiLogin Turned Off"
+		echo -e ""
+		echo -e "======================================"
+		service cron reload
+		service cron restart
+		;;
+	3)
+		clear
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e "\E[44;1;39m       CURRENT AUTOKILL SETTINGS     \E[0m"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e ""
+
+		if [ -f "/etc/cron.d/tendang" ]; then
+			# Extract settings from cron file
+			cron_schedule=$(grep -v "^#" /etc/cron.d/tendang | awk '{print $1, $2, $3, $4, $5}')
+			tendang_params=$(grep -v "^#" /etc/cron.d/tendang | awk '{for(i=8;i<=NF;i++) printf "%s ", $i}')
+
+			# Extract individual parameters
+			max_conn=$(echo $tendang_params | awk '{print $1}')
+			period=$(echo $tendang_params | awk '{print $2}')
+			duration=$(echo $tendang_params | awk '{print $3}')
+			threshold=$(echo $tendang_params | awk '{print $4}')
+
+			# Convert duration from seconds to minutes
+			duration_min=$((duration / 60))
+
+			echo -e "Cron schedule     : $cron_schedule"
+			echo -e "Max connections   : $max_conn"
+			echo -e "Violation period  : $period minutes"
+			echo -e "Ban duration      : $duration_min minutes"
+			echo -e "Violation threshold: $threshold violations"
+			echo -e ""
+			echo -e "Raw cron entry:"
+			echo -e "$(cat /etc/cron.d/tendang)"
+
+			# Debug log info
+			if [ -f "/root/autokill-settings.log" ]; then
+				echo -e ""
+				echo -e "Last setting changes (from log):"
+				tail -n 5 /root/autokill-settings.log
+			fi
+		else
+			echo -e "AutoKill is not currently active."
+			echo -e "No cron job found in /etc/cron.d/tendang"
+		fi
+
+		echo -e ""
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		;;
+	x | *)
+		menu
+		;;
+	esac
+	read -n 1 -s -r -p "Press any key to back on menu"
+	menu
+}
+
+function view_banned() {
+	clear
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e "\E[44;1;39m         BANNED USERS LIST          \E[0m"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e "Username        Ban Time           Remaining"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+
+	if [ -f "/root/banned-users.txt" ] && [ -s "/root/banned-users.txt" ]; then
+		current_time=$(date +%s)
+		while IFS= read -r line || [ -n "$line" ]; do
+			# Skip empty lines
+			if [ -z "$line" ]; then
+				continue
+			fi
+
+			user=$(echo $line | awk '{print $1}')
+			ban_time=$(echo $line | awk '{print $2}')
+			ban_duration=$(echo $line | awk '{print $3}')
+
+			# Skip entries with invalid timestamps
+			if [[ -z "$ban_time" || "$ban_time" == "@" ]]; then
+				continue
+			fi
+
+			# Use default duration if not specified
+			if [ -z "$ban_duration" ]; then
+				ban_duration=300 # Default to 5 minutes
+			fi
+
+			ban_date=$(date -d @$ban_time '+%Y-%m-%d %H:%M:%S')
+			remaining_seconds=$((ban_duration - (current_time - ban_time)))
+
+			# Only show users still under ban
+			if [ $remaining_seconds -gt 0 ]; then
+				remaining_minutes=$((remaining_seconds / 60))
+				remaining_seconds=$((remaining_seconds % 60))
+				printf "%-15s %-18s %dm %ds\n" "$user" "$ban_date" "$remaining_minutes" "$remaining_seconds"
+			fi
+		done </root/banned-users.txt
+
+		if [ $? -ne 0 ]; then
+			echo -e " Error reading banned-users.txt"
+		fi
+	else
+		echo -e " No users are currently banned"
+	fi
+
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e ""
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e "\E[44;1;39m      RECENT VIOLATIONS LOG        \E[0m"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+
+	if [ -f "/root/log-limit.txt" ]; then
+		# Show the last 15 violations from the log
+		echo -e "Last 15 violations:"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		grep -E " - .* - [0-9]+$" /root/log-limit.txt | tail -n 15
+
+		# Show ban events
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e "Recent ban events:"
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		grep "BANNED user" /root/log-limit.txt | tail -n 10
+	else
+		echo -e " No violation logs found"
+	fi
+
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e ""
+	echo -e "[1] Unban Specific User"
+	echo -e "[2] Unban All Users"
+	echo -e "[3] Return to Main Menu"
+	echo -e ""
+	read -p "Select an option [1-3]: " option
+
+	case $option in
+	1)
+		unban_user
+		;;
+	2)
+		unban_all_users
+		;;
+	*)
+		menu
+		;;
+	esac
+}
+
+function unban_user() {
+	clear
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e "\E[44;1;39m            UNBAN USER             \E[0m"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e ""
+
+	if [ ! -f "/root/banned-users.txt" ]; then
+		echo -e "No banned users file found."
+		echo -e ""
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e ""
+		read -n 1 -s -r -p "Press any key to back on menu"
+		menu
+		return
+	fi
+
+	if [ ! -s "/root/banned-users.txt" ]; then
+		echo -e "No banned users found."
+		echo -e ""
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e ""
+		read -n 1 -s -r -p "Press any key to back on menu"
+		menu
+		return
+	fi
+
+	echo -e "Currently banned users:"
+	echo -e ""
+	echo -e "Username        Ban Time           Remaining"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+
+	current_time=$(date +%s)
+	cat /root/banned-users.txt | while read LINE || [ -n "$LINE" ]; do
+		# Skip empty lines
+		if [ -z "$LINE" ]; then
+			continue
+		fi
+
+		user=$(echo $LINE | awk '{print $1}')
+		ban_time=$(echo $LINE | awk '{print $2}')
+		ban_duration=$(echo $LINE | awk '{print $3}')
+
+		# Skip entries with invalid timestamps
+		if [[ -z "$ban_time" || "$ban_time" == "@" ]]; then
+			continue
+		fi
+
+		# Use default duration if not specified
+		if [ -z "$ban_duration" ]; then
+			ban_duration=300 # Default to 5 minutes
+		fi
+
+		ban_date=$(date -d @$ban_time '+%Y-%m-%d %H:%M:%S')
+		remaining_seconds=$((ban_duration - (current_time - ban_time)))
+
+		if [ $remaining_seconds -gt 0 ]; then
+			remaining_minutes=$((remaining_seconds / 60))
+			remaining_seconds=$((remaining_seconds % 60))
+			printf "%-15s %-18s %dm %ds\n" "$user" "$ban_date" "$remaining_minutes" "$remaining_seconds"
+		fi
+	done
+
+	echo -e ""
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e ""
+	read -p "Enter username to unban: " UNBAN_USER
+
+	if [[ -n "$UNBAN_USER" ]]; then
+		# Check if user exists in banned list
+		if grep -q "^$UNBAN_USER " /root/banned-users.txt; then
+			# Unlock the account
+			passwd -u $UNBAN_USER >/dev/null 2>&1
+
+			# Remove user from banned list
+			grep -v "^$UNBAN_USER " /root/banned-users.txt >/tmp/banned-users.tmp
+			mv /tmp/banned-users.tmp /root/banned-users.txt
+
+			echo -e "User $UNBAN_USER has been unbanned successfully!"
+			echo "$(date): Admin manually unbanned user $UNBAN_USER" >>/root/log-limit.txt
+		else
+			echo -e "User $UNBAN_USER is not in the banned list."
+		fi
+	else
+		echo -e "No username specified. No action taken."
+	fi
+
+	echo -e ""
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e ""
+	read -n 1 -s -r -p "Press any key to back on menu"
+	menu
+}
+
+function unban_all_users() {
+	clear
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e "\E[44;1;39m          UNBAN ALL USERS          \E[0m"
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e ""
+
+	if [ ! -f "/root/banned-users.txt" ]; then
+		echo -e "No banned users file found."
+		echo -e ""
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e ""
+		read -n 1 -s -r -p "Press any key to back on menu"
+		menu
+		return
+	fi
+
+	if [ ! -s "/root/banned-users.txt" ]; then
+		echo -e "No banned users found."
+		echo -e ""
+		echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+		echo -e ""
+		read -n 1 -s -r -p "Press any key to back on menu"
+		menu
+		return
+	fi
+
+	banned_count=$(grep -v "^$" /root/banned-users.txt | wc -l)
+	echo -e "You are about to unban $banned_count user(s)."
+	echo -e "Do you want to continue? (y/n) "
+	read answer
+
+	if [[ "$answer" =~ [Yy] ]]; then
+		# Unban all users
+		while IFS= read -r line || [ -n "$line" ]; do
+			# Skip empty lines
+			if [ -z "$line" ]; then
+				continue
+			fi
+
+			user=$(echo $line | awk '{print $1}')
+			# Unlock the account
+			passwd -u $user >/dev/null 2>&1
+		done </root/banned-users.txt
+
+		# Clear the banned users file
+		>/root/banned-users.txt
+		echo -e "Successfully unbanned all users!"
+		echo "$(date): Admin unbanned all users" >>/root/log-limit.txt
+	else
+		echo -e "Operation cancelled."
+	fi
+
+	echo -e ""
+	echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+	echo -e ""
+	read -n 1 -s -r -p "Press any key to back on menu"
+	menu
+}
+
 clear
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-echo -e "\E[44;1;39m                   ⇱ SERVER INFORMATION ⇲                      \E[0m"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-echo -e "${BICyan} "                                                                      
-echo -e "${BICyan} ⇲  ${BICyan}Use Core        :  ${BIYellow}FREE TUNNELING PTOJECT"    
-echo -e "${BICyan} ⇲  ${BICyan}Current Domain  :  ${BIYellow}$(cat /etc/xray/domain)${NC}" 
-echo -e "${BICyan} ⇲  ${BICyan}IP-VPS          :  ${BIYellow}$IPVPS${NC}"                  
-echo -e "${BICyan} ⇲  ${BICyan}ISP-VPS         :  ${BIYellow}$ISPVPS${NC}"                 
-echo -e "${BICyan} "
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-echo -e "\E[44;1;39m                    ⇱ STATUS SERVICE ⇲                        \E[0m"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
+echo -e "${BICyan} ┌─────────────────────────────────────────────────────┐${NC}"
+echo -e "       ${BIWhite}${UWhite}SSH MENU ${NC}"
 echo -e ""
-echo -e "     ${BICyan} SSH ${NC}: $ressh"" ${BICyan} NGINX ${NC}: $resngx"" ${BICyan}  XRAY ${NC}: $resv2r"" ${BICyan} TROJAN ${NC}: $resv2r"
-echo -e "     ${BICyan}          DROPBEAR ${NC}: $resdbr" "${BICyan} SSH-WS ${NC}: $ressshws"
-echo -e ""
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-echo -e "\E[44;1;39m                     ⇱ MENU SERVICE ⇲                         \E[0m"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-echo -e ""
-echo -e " ${BICyan}[${BIWhite}01${BICyan}]${RED} •${NC} ${CYAN}SSH MENU        $NC  ${BICyan}[${BIWhite}12${BICyan}]${RED} • ${NC}${CYAN}GEN-SSL / CERTV $NC"
-echo -e " ${BICyan}[${BIWhite}02${BICyan}]${RED} •${NC} ${CYAN}VMESS MENU      $NC  ${BICyan}[${BIWhite}13${BICyan}]${RED} • ${NC}${CYAN}BANNER CHAGE $NC"
-echo -e " ${BICyan}[${BIWhite}03${BICyan}]${RED} •${NC} ${CYAN}VLESS MENU      $NC  ${BICyan}[${BIWhite}14${BICyan}]${RED} • ${NC}${CYAN}CEK RUNNING SERVICE $NC"
-echo -e " ${BICyan}[${BIWhite}04${BICyan}]${RED} •${NC} ${CYAN}TROJAN MENU     $NC  ${BICyan}[${BIWhite}15${BICyan}]${RED} • ${NC}${CYAN}CEK TRAFIC $NC"
-echo -e " ${BICyan}[${BIWhite}05${BICyan}]${RED} •${NC} ${CYAN}S-SOCK MENU     $NC  ${BICyan}[${BIWhite}16${BICyan}]${RED} • ${NC}${CYAN}SPEEDTEDT  $NC"
-echo -e " ${BICyan}[${BIWhite}06${BICyan}]${RED} •${NC} ${CYAN}TENDANG         $NC  ${BICyan}[${BIWhite}17${BICyan}]${RED} • ${NC}${CYAN}CEK BANDWIDTH USE $NC"
-echo -e " ${BICyan}[${BIWhite}07${BICyan}]${RED} •${NC} ${CYAN}AUTO REBOOT     $NC  ${BICyan}[${BIWhite}18${BICyan}]${RED} • ${NC}${CYAN}LIMMIT SPEED $NC"
-echo -e " ${BICyan}[${BIWhite}08${BICyan}]${RED} •${NC} ${CYAN}REBOOT          $NC  ${BICyan}[${BIWhite}19${BICyan}]${RED} • ${NC}${CYAN}WEBMIN $NC"
-echo -e " ${BICyan}[${BIWhite}09${BICyan}]${RED} •${NC} ${CYAN}RESTART SERVICE $NC  ${BICyan}[${BIWhite}20${BICyan}]${RED} • ${NC}${CYAN}SCRIPT INFO $NC"
-echo -e " ${BICyan}[${BIWhite}10${BICyan}]${RED} •${NC} ${CYAN}BACKUP MENU     $NC  ${BICyan}[${BIWhite}21${BICyan}]${RED} • ${NC}${CYAN}CLEAR LOG $NC"
-echo -e " ${BICyan}[${BIWhite}11${BICyan}]${RED} •${NC} ${CYAN}ADD HOST        $NC  ${BICyan}[${BIWhite}22${BICyan}]${RED} • ${NC}${CYAN}FIX MISSING POINTING $NC"
-echo -e " ${BICyan}[${BIWhite} X ${BICyan}] TYPE X FOR EXIT ${BICyan}${BIYellow}${BICyan}${NC}"  
-echo -e " ${RED}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-echo -e "\E[44;1;39m                ⇱ FREE TUNNELING PROJECT ⇲                    \E[0m"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-echo
+echo -e "     ${BICyan}[${BIWhite}1${BICyan}] Add Account SSH      "
+echo -e "     ${BICyan}[${BIWhite}2${BICyan}] Delete Account SSH      "
+echo -e "     ${BICyan}[${BIWhite}3${BICyan}] Renew Account SSH      "
+echo -e "     ${BICyan}[${BIWhite}4${BICyan}] Check User SSH     "
+echo -e "     ${BICyan}[${BIWhite}5${BICyan}] Multilogin SSH     "
+echo -e "     ${BICyan}[${BIWhite}6${BICyan}] Auto Delete user Expired     "
+echo -e "     ${BICyan}[${BIWhite}7${BICyan}] Auto Kill user SSH    "
+echo -e "     ${BICyan}[${BIWhite}8${BICyan}] Check Member SSH"
+echo -e "     ${BICyan}[${BIWhite}9${BICyan}] View Banned Users & Violations"
+echo -e " ${BICyan}└─────────────────────────────────────────────────────┘${NC}"
+echo -e "     ${BIYellow}Press x or [ Ctrl+C ] • To-${BIWhite}Exit${NC}"
+echo ""
 read -p " Select menu : " opt
 echo -e ""
 case $opt in
-1) clear ; menu-ssh ;;
-2) clear ; menu-vmess ;;
-3) clear ; menu-vless ;;
-4) clear ; menu-trojan ;;
-5) clear ; menu-ss ;;
-6) clear ; tendang ;;
-7) clear ; autoreboot ;;
-8) clear ; reboot ;;
-9) clear ; restart ;;
-10) clear ; menu-bckp ;;
-11) clear ; addhost ;;
-12) clear ; genssl ;;
-13) clear ; nano /etc/issue.net ;;
-14) clear ; running ;;
-15) clear ; cek-trafik ;;
-16) clear ; cek-speed ;;
-17) clear ; cek-bandwidth ;;
-#18) clear ; cek-ram ;;
-18) clear ; limit-speed ;;
-19) clear ; wbm ;;
-20) clear ; cat /root/log-install.txt ;;
-21) clear ; clearlog ;;
-#99) clear ; update ;;
-22) clear ; wget https://raw.githubusercontent.com/NevermoreSSH/Blueblue/main/cf.sh && chmod +x cf.sh && ./cf.sh ;;
-
-0) clear ; menu ;;
+1)
+	clear
+	usernew
+	;;
+2)
+	clear
+	del
+	;;
+3)
+	clear
+	renew
+	;;
+4)
+	clear
+	cek
+	;;
+5)
+	clear
+	ceklim
+	;;
+6)
+	clear
+	autodel
+	;;
+7)
+	clear
+	autokill
+	;;
+8)
+	clear
+	member
+	;;
+9)
+	clear
+	view_banned
+	;;
+0)
+	clear
+	menu
+	;;
 x) exit ;;
-*) echo -e "" ; echo "Press any key to back exit" ; sleep 1 ; exit ;;
+*)
+	echo -e ""
+	echo "Press any key to back on menu"
+	sleep 1
+	menu
+	;;
 esac
